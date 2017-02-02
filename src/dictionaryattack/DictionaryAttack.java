@@ -1,5 +1,8 @@
 package dictionaryattack;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,10 +24,15 @@ public class DictionaryAttack {
     public static void main(String[] args) throws UnsupportedEncodingException,
             NoSuchAlgorithmException {
         String hash = "6f047ccaa1ed3e8e05cde1c7ebc7d958";
-        String pass = "181003";
-        if (hash.equals(md5Hash(pass))) {
-            printResult(hash, pass, .2);
-        }
+        String[] passwords = new String[6];
+        passwords[0] = "6f047ccaa1ed3e8e05cde1c7ebc7d958";
+        passwords[1] = "275a5602cd91a468a0e10c226a03a39c";
+        passwords[2] = "b4ba93170358df216e8648734ac2d539";
+        passwords[3] = "dc1c6ca00763a1821c5af993e0b6f60a";
+        passwords[4] = "8cd9f1b962128bd3d3ede2f5f101f4fc";
+        passwords[5] = "554532464e066aba23aee72b95f18ba2";
+        LinkedList<String> dictionary = getDictionary();
+        compareDictionary(dictionary, hash);
     }
 
     /**
@@ -57,25 +65,59 @@ public class DictionaryAttack {
     /**
      * Prompts user for path to dictionary file, reads in file, and creates
      * linked list of possible passwords.
-     * 
+     *
      * @return linked list of possible passwords
      */
     public static LinkedList<String> getDictionary() {
         LinkedList<String> dictionary = new LinkedList<>();
+        FileReader fr = null;
+        BufferedReader br = null;
+        String FILENAME = "phpbb.txt";
 
-        System.out.println("Please input the path to the dictionary file "
-                + "(.txt file)");
+//        System.out.println("Please input the path to the dictionary file "
+//                + "(.txt file)");
+        try {
+            fr = new FileReader(FILENAME);
+            br = new BufferedReader(fr);
+            String currentLine;
+            while ((currentLine = br.readLine()) != null) {
+                dictionary.add(currentLine);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (fr != null) {
+                    fr.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
 
         return dictionary;
     }
 
     /**
      * @param dict the list of possible passwords to compare
-     * @param pass the hash value to compare to
+     * @param hash the hash value to compare to
      *
      * @return True if it matches a password, false if not
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.security.NoSuchAlgorithmException
      */
-    public static boolean compareDictionary(String[] dict, String pass) {
+    public static boolean compareDictionary(LinkedList<String> dict,
+            String hash) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+
+        for (String pass : dict) {
+            if (hash.equals(md5Hash(pass))) {
+                printResult(hash, pass, .2);
+                return true;
+            }
+        }
 
         return false;
     }

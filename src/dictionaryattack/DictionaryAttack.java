@@ -23,7 +23,6 @@ public class DictionaryAttack {
      */
     public static void main(String[] args) throws UnsupportedEncodingException,
             NoSuchAlgorithmException {
-        String hash = "6f047ccaa1ed3e8e05cde1c7ebc7d958";
         String[] passwords = new String[6];
         passwords[0] = "6f047ccaa1ed3e8e05cde1c7ebc7d958";
         passwords[1] = "275a5602cd91a468a0e10c226a03a39c";
@@ -32,7 +31,10 @@ public class DictionaryAttack {
         passwords[4] = "8cd9f1b962128bd3d3ede2f5f101f4fc";
         passwords[5] = "554532464e066aba23aee72b95f18ba2";
         LinkedList<String> dictionary = getDictionary();
-        compareDictionary(dictionary, hash);
+        for (String hash : passwords) {
+            System.out.println("Comparing new hash value");
+            compareDictionary(dictionary, hash);
+        }
     }
 
     /**
@@ -45,8 +47,6 @@ public class DictionaryAttack {
      */
     public static String md5Hash(String s) throws UnsupportedEncodingException,
             NoSuchAlgorithmException {
-
-        LinkedList<String> dictionary = getDictionary();
         // gets byte array for s
         byte[] bytesOfS = s.getBytes("UTF-8");
         // hashes byte array with MD5
@@ -74,8 +74,6 @@ public class DictionaryAttack {
         BufferedReader br = null;
         String FILENAME = "phpbb.txt";
 
-//        System.out.println("Please input the path to the dictionary file "
-//                + "(.txt file)");
         try {
             fr = new FileReader(FILENAME);
             br = new BufferedReader(fr);
@@ -97,7 +95,8 @@ public class DictionaryAttack {
                 ex.printStackTrace();
             }
         }
-
+        System.out.println("Dictionary is " + dictionary.size() 
+        + " passwords long.");
         return dictionary;
     }
 
@@ -110,13 +109,21 @@ public class DictionaryAttack {
      * @throws java.security.NoSuchAlgorithmException
      */
     public static boolean compareDictionary(LinkedList<String> dict,
-            String hash) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-
+            String hash) throws UnsupportedEncodingException, 
+            NoSuchAlgorithmException {
+        int i = 1;
+        int j = 1;
+        int tenth = dict.size()/10;
         for (String pass : dict) {
+            if(i%tenth==0){
+                System.out.println(j + "0% of the way through dictionary.");
+                j++;
+            }
             if (hash.equals(md5Hash(pass))) {
                 printResult(hash, pass, .2);
                 return true;
             }
+            i++;
         }
 
         return false;

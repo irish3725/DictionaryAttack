@@ -1,12 +1,14 @@
 package dictionaryattack;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
  *
@@ -23,18 +25,31 @@ public class DictionaryAttack {
      */
     public static void main(String[] args) throws UnsupportedEncodingException,
             NoSuchAlgorithmException {
-        String[] passwords = new String[6];
-        passwords[0] = "6f047ccaa1ed3e8e05cde1c7ebc7d958";
-        passwords[1] = "275a5602cd91a468a0e10c226a03a39c";
-        passwords[2] = "b4ba93170358df216e8648734ac2d539";
-        passwords[3] = "dc1c6ca00763a1821c5af993e0b6f60a";
-        passwords[4] = "8cd9f1b962128bd3d3ede2f5f101f4fc";
-        passwords[5] = "554532464e066aba23aee72b95f18ba2";
-        LinkedList<String> dictionary = getDictionary();
-        for (String hash : passwords) {
-            System.out.println("Comparing new hash value");
-            compareDictionary(dictionary, hash);
+        System.out.println("Starting attack.");
+        LinkedList<String> passwords = new LinkedList<>();
+//        String[] passwords = new String[6];
+        passwords.add("6f047ccaa1ed3e8e05cde1c7ebc7d958");
+        passwords.add("275a5602cd91a468a0e10c226a03a39c");
+        passwords.add("b4ba93170358df216e8648734ac2d539");
+        passwords.add("dc1c6ca00763a1821c5af993e0b6f60a");
+        passwords.add("8cd9f1b962128bd3d3ede2f5f101f4fc");
+        passwords.add("554532464e066aba23aee72b95f18ba2");
+        String path = "";
+        if(args.length == 0){
+            System.out.println("Please input the path to dictionary file ");
+            Scanner in = new Scanner(System.in);
+            path = in.nextLine();
+            
+        } else {
+            path = args[0];
         }
+        if(path.startsWith("~")){
+            path = path.substring(1);
+        }
+        if(!path.startsWith("/")){
+            path = "/" + path;
+        }
+        getDictionary(passwords, path);
     }
 
     /**
@@ -58,28 +73,52 @@ public class DictionaryAttack {
             sb.append(String.format("%02X", b));
         }
         String hash = sb.toString().toLowerCase();
-        //
+
         return hash;
     }
 
     /**
-     * Prompts user for path to dictionary file, reads in file, and creates
-     * linked list of possible passwords.
+     * Prompts user for path to dictionary file, hashes each line in dictionary
+     * file and compares each hash to the list of hashed passwords.
      *
-     * @return linked list of possible passwords
+     * @param hash list of hashed passwords
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.security.NoSuchAlgorithmException
      */
-    public static LinkedList<String> getDictionary() {
-        LinkedList<String> dictionary = new LinkedList<>();
+    public static void getDictionary(LinkedList<String> hash, String path) throws
+            UnsupportedEncodingException, NoSuchAlgorithmException {
+        System.out.println("Loading dictionary.");
+        long startTime = System.currentTimeMillis();
         FileReader fr = null;
         BufferedReader br = null;
-        String FILENAME = "phpbb.txt";
+        String home = System.getProperty("user.home");
+        File absolute = new File(home + path);
+        System.out.println(absolute.getAbsolutePath());
 
         try {
-            fr = new FileReader(FILENAME);
+            fr = new FileReader(absolute);
+//            fr = new FileReader(FILENAME);
             br = new BufferedReader(fr);
             String currentLine;
+            int i = 1;
+            int j = 1;
             while ((currentLine = br.readLine()) != null) {
-                dictionary.add(currentLine);
+
+                int tenth = 14344391 / 100;
+                if (i % tenth == 0) {
+                    long ms = System.currentTimeMillis() - startTime;
+                    long min = ms / 60000;
+                    long s = (ms % 60000) / 1000;
+                    System.out.println("" + j + "% done. ("
+                            + min + " minutes " + s + " seconds)");
+                    j++;
+                }
+                for (String s : hash) {
+                    if (s.equals(md5Hash(currentLine))) {
+                        printResult(s, currentLine, .2);
+                    }
+                }
+                i++;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,38 +134,6 @@ public class DictionaryAttack {
                 ex.printStackTrace();
             }
         }
-        System.out.println("Dictionary is " + dictionary.size() 
-        + " passwords long.");
-        return dictionary;
-    }
-
-    /**
-     * @param dict the list of possible passwords to compare
-     * @param hash the hash value to compare to
-     *
-     * @return True if it matches a password, false if not
-     * @throws java.io.UnsupportedEncodingException
-     * @throws java.security.NoSuchAlgorithmException
-     */
-    public static boolean compareDictionary(LinkedList<String> dict,
-            String hash) throws UnsupportedEncodingException, 
-            NoSuchAlgorithmException {
-        int i = 1;
-        int j = 1;
-        int tenth = dict.size()/10;
-        for (String pass : dict) {
-            if(i%tenth==0){
-                System.out.println(j + "0% of the way through dictionary.");
-                j++;
-            }
-            if (hash.equals(md5Hash(pass))) {
-                printResult(hash, pass, .2);
-                return true;
-            }
-            i++;
-        }
-
-        return false;
     }
 
     /**

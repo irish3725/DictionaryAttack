@@ -11,13 +11,17 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
- *
+ * Takes in one or more .txt files for cracking hashed passwords. Each .txt file
+ * should have one password per line. .txt files can be read in as arguements
+ * or if no arguements are given, it will prompt for one .txt file.
+ * 
  * @author alex
  */
 public class DictionaryAttack {
 
     /**
-     * Reads in Dictionary document
+     * Reads in .txt file as a dictionary from arguements. Will take any number
+     * of .txt files. If none are given, it will prompt for one .txt file.
      *
      * @param args the command line arguments
      * @throws java.io.UnsupportedEncodingException
@@ -27,7 +31,6 @@ public class DictionaryAttack {
             NoSuchAlgorithmException {
         System.out.println("Starting attack.");
         LinkedList<String> passwords = new LinkedList<>();
-//        String[] passwords = new String[6];
         passwords.add("6f047ccaa1ed3e8e05cde1c7ebc7d958");
         passwords.add("275a5602cd91a468a0e10c226a03a39c");
         passwords.add("b4ba93170358df216e8648734ac2d539");
@@ -35,7 +38,7 @@ public class DictionaryAttack {
         passwords.add("8cd9f1b962128bd3d3ede2f5f101f4fc");
         passwords.add("554532464e066aba23aee72b95f18ba2");
         if (args.length == 0) {
-            String path = "";
+            String path;
             System.out.println("Please input the path to dictionary file ");
             Scanner in = new Scanner(System.in);
             path = in.nextLine();
@@ -87,10 +90,12 @@ public class DictionaryAttack {
     }
 
     /**
-     * Prompts user for path to dictionary file, hashes each line in dictionary
-     * file and compares each hash to the list of hashed passwords.
+     * Compares hashed values of passwords in .txt file to the hashed values
+     * hardcoded into the program. If one is found, the info about it is printed
+     * and it is removed from the list.
      *
      * @param hash list of hashed passwords
+     * @param path is string representing path to file.
      * @throws java.io.UnsupportedEncodingException
      * @throws java.security.NoSuchAlgorithmException
      */
@@ -106,7 +111,6 @@ public class DictionaryAttack {
 
         try {
             fr = new FileReader(absolute);
-//            fr = new FileReader(FILENAME);
             br = new BufferedReader(fr);
             String currentLine;
             int i = 1;
@@ -115,8 +119,7 @@ public class DictionaryAttack {
                 String remove = "";
                 for (String s : hash) {
                     if (s.equals(md5Hash(currentLine))) {
-                        printResult(s, currentLine, (double)(System.currentTimeMillis() 
-                                - startTime) / 1000);
+                        printResult(s, currentLine, (double) (System.currentTimeMillis() - startTime) / 1000);
                         remove = s;
                     }
                 }
@@ -124,7 +127,6 @@ public class DictionaryAttack {
                 i++;
             }
         } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             try {
                 if (br != null) {
@@ -134,12 +136,13 @@ public class DictionaryAttack {
                     fr.close();
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
             }
         }
     }
 
     /**
+     * Prints all info about a password that was found.
+     *
      * @param hash hash value to be printed
      * @param pass password to be printed
      * @param time amount of time to be printed

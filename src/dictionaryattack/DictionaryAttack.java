@@ -34,22 +34,31 @@ public class DictionaryAttack {
         passwords.add("dc1c6ca00763a1821c5af993e0b6f60a");
         passwords.add("8cd9f1b962128bd3d3ede2f5f101f4fc");
         passwords.add("554532464e066aba23aee72b95f18ba2");
-        String path = "";
-        if(args.length == 0){
+        if (args.length == 0) {
+            String path = "";
             System.out.println("Please input the path to dictionary file ");
             Scanner in = new Scanner(System.in);
             path = in.nextLine();
-            
+            if (path.startsWith("~")) {
+                path = path.substring(1);
+            }
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            getDictionary(passwords, path);
         } else {
-            path = args[0];
+            for (String path : args) {
+                System.out.println("\n");
+                if (path.startsWith("~")) {
+                    path = path.substring(1);
+                }
+                if (!path.startsWith("/")) {
+                    path = "/" + path;
+                }
+                getDictionary(passwords, path);
+            }
         }
-        if(path.startsWith("~")){
-            path = path.substring(1);
-        }
-        if(!path.startsWith("/")){
-            path = "/" + path;
-        }
-        getDictionary(passwords, path);
+
     }
 
     /**
@@ -87,7 +96,7 @@ public class DictionaryAttack {
      */
     public static void getDictionary(LinkedList<String> hash, String path) throws
             UnsupportedEncodingException, NoSuchAlgorithmException {
-        System.out.println("Loading dictionary.");
+        System.out.print("Loading dictionary ");
         long startTime = System.currentTimeMillis();
         FileReader fr = null;
         BufferedReader br = null;
@@ -103,16 +112,16 @@ public class DictionaryAttack {
             int i = 1;
             int j = 1;
             while ((currentLine = br.readLine()) != null) {
-
-                int tenth = 14344391 / 100;
-                if (i % tenth == 0) {
-                    long ms = System.currentTimeMillis() - startTime;
-                    long min = ms / 60000;
-                    long s = (ms % 60000) / 1000;
-                    System.out.println("" + j + "% done. ("
-                            + min + " minutes " + s + " seconds)");
-                    j++;
-                }
+//              tells how far through rockyou.txt you are
+//                int tenth = 14344391 / 100;
+//                if (i % tenth == 0) {
+//                    long ms = System.currentTimeMillis() - startTime;
+//                    long min = ms / 60000;
+//                    long s = (ms % 60000) / 1000;
+//                    System.out.println("" + j + "% done. ("
+//                            + min + " minutes " + s + " seconds)");
+//                    j++;
+//                }
                 for (String s : hash) {
                     if (s.equals(md5Hash(currentLine))) {
                         printResult(s, currentLine, .2);

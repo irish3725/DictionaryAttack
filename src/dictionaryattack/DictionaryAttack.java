@@ -112,21 +112,15 @@ public class DictionaryAttack {
             int i = 1;
             int j = 1;
             while ((currentLine = br.readLine()) != null) {
-//              tells how far through rockyou.txt you are
-//                int tenth = 14344391 / 100;
-//                if (i % tenth == 0) {
-//                    long ms = System.currentTimeMillis() - startTime;
-//                    long min = ms / 60000;
-//                    long s = (ms % 60000) / 1000;
-//                    System.out.println("" + j + "% done. ("
-//                            + min + " minutes " + s + " seconds)");
-//                    j++;
-//                }
+                String remove = "";
                 for (String s : hash) {
                     if (s.equals(md5Hash(currentLine))) {
-                        printResult(s, currentLine, .2);
+                        printResult(s, currentLine, (double)(System.currentTimeMillis() 
+                                - startTime) / 1000);
+                        remove = s;
                     }
                 }
+                hash.remove(remove);
                 i++;
             }
         } catch (IOException e) {
@@ -151,7 +145,7 @@ public class DictionaryAttack {
      * @param time amount of time to be printed
      */
     public static void printResult(String hash, String pass, double time) {
-        System.out.println("The password for the hash value "
+        System.out.println("\nThe password for the hash value "
                 + hash + " is \n" + pass + ", and it takes the program " + time
                 + " seconds to recover this password.");
     }

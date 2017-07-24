@@ -11,17 +11,17 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
- * Takes in one or more .txt files for cracking hashed passwords. Each .txt file
- * should have one password per line. .txt files can be read in as arguements
- * or if no arguements are given, it will prompt for one .txt file.
+ * Takes in one or more .txt files for cracking hashed passwords. Each file
+ * should have one password per line. Files can be read in as arguments
+ * or if no arguments are given, it will prompt for one file.
  * 
  * @author alex
  */
 public class DictionaryAttack {
 
     /**
-     * Reads in .txt file as a dictionary from arguements. Will take any number
-     * of .txt files. If none are given, it will prompt for one .txt file.
+     * Reads in .txt file as a dictionary from arguments. Will take any number
+     * of .txt files. If none are given, it will prompt for one.
      *
      * @param args the command line arguments
      * @throws java.io.UnsupportedEncodingException

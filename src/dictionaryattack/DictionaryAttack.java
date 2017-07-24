@@ -61,7 +61,6 @@ public class DictionaryAttack {
                 getDictionary(passwords, path);
             }
         }
-
     }
 
     /**
@@ -113,8 +112,6 @@ public class DictionaryAttack {
             fr = new FileReader(absolute);
             br = new BufferedReader(fr);
             String currentLine;
-            int i = 1;
-            int j = 1;
             while ((currentLine = br.readLine()) != null) {
                 String remove = "";
                 for (String s : hash) {
@@ -124,7 +121,6 @@ public class DictionaryAttack {
                     }
                 }
                 hash.remove(remove);
-                i++;
             }
         } catch (IOException e) {
         } finally {
